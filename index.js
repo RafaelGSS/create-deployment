@@ -1,6 +1,5 @@
 const core = require('@actions/core');
-const github = require('@actions/github');
-const context = github.context;
+const { GitHub, context } = require('@actions/github');
 
 async function main() {
   const ref = core.getInput('ref') || context.ref || context.sha;
@@ -40,12 +39,12 @@ async function main() {
     }
   }
 
-  const octokit = github.getOctokit(
+  const github = new GitHub(
     process.env.GITHUB_TOKEN,
     { previews: ["ant-man-preview", "flash-preview"]});
 
   core.debug(JSON.stringify(req));
-  const resp = await octokit.rest.repos.createDeployment(req);
+  const resp = await github.repos.createDeployment(req);
   core.debug(JSON.stringify(resp));
 
   if (resp.status >= 400) {
